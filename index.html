@@ -1,0 +1,1103 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Propuesta Narrative Studio</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Raleway:wght@300;400;600&display=swap">
+<style>
+/* Lienzo fijo de 1600 × 900 que se escala a la ventana, como el deck de Viakon.
+   Marco de Narrative Studio: gris claro, Montserrat negra en títulos, Raleway
+   ligera en texto, naranja y magenta como únicos acentos, degradado entre ambos.
+   Diseño de un solo tema, deliberado: es la identidad de la marca. */
+:root {
+  --fondo: #F0F3F2;
+  --tinta: #212121;
+  --texto: #3a3a3a;
+  --suave: #4b5563;
+  --pie: #6b7280;
+  --naranja: #F38B20;
+  --coral: #EF5A4C;
+  --magenta: #EE2A7B;
+  --gris-azul: #B6C6C9;
+  --oscuro: #3C3950;
+  --linea: #dfe3e6;
+  --borde: #d3d8e2;
+  --blanco: #ffffff;
+  --degradado: linear-gradient(135deg, #F38B20 0%, #EF5A4C 55%, #EE2A7B 100%);
+  --titulo: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+  --cuerpo: "Raleway", "Helvetica Neue", Arial, sans-serif;
+  --sombra: 0 12px 40px rgba(0, 0, 0, 0.06);
+  --curva: cubic-bezier(0.22, 1, 0.36, 1);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; overflow: hidden;
+  background: var(--fondo); transition: background-color .6s ease; color: var(--tinta);
+  font-family: var(--cuerpo);
+  -webkit-font-smoothing: antialiased;
+}
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--magenta); outline-offset: 3px; }
+
+/* ---------- Escenario ---------- */
+.escenario {
+  position: absolute; left: 50%; top: 50%;
+  width: 1600px; height: 900px;
+  transform: translate(-50%, -50%) scale(var(--escala, 1));
+  transform-origin: center;
+  user-select: none; -webkit-user-select: none;
+}
+.fondo-degradado { position: absolute; inset: 0; background: var(--degradado); opacity: 0; transition: opacity .6s ease; }
+.escenario.degradada .fondo-degradado { opacity: 1; }
+body.degradada { background: var(--degradado); }
+
+.marca-fija { position: absolute; left: 72px; top: 44px; z-index: 5; }
+.contador {
+  position: absolute; right: 72px; top: 52px; z-index: 5;
+  font: 700 14px var(--titulo); letter-spacing: .2em; color: #8b93a1;
+  display: flex; align-items: center; gap: 18px;
+}
+.escenario.degradada .contador { color: rgba(255,255,255,.85); }
+.capitulo { font-weight: 600; letter-spacing: .16em; text-transform: uppercase; font-size: 12px; }
+
+/* Marca: el cuadro naranja con la N */
+.marca { display: flex; align-items: center; gap: 16px; }
+.marca .iso {
+  width: var(--t, 48px); height: var(--t, 48px); background: var(--naranja); color: #fff;
+  display: grid; place-items: center; flex-shrink: 0; font-family: var(--titulo);
+}
+.marca .iso span { display: flex; flex-direction: column; align-items: center; line-height: 1; margin-top: calc(var(--t, 48px) * .04); }
+.marca .iso b { font-weight: 900; font-size: calc(var(--t, 48px) * .6); }
+.marca .iso i { font-style: normal; font-weight: 600; text-transform: uppercase; font-size: calc(var(--t, 48px) * .115); letter-spacing: .3em; margin-top: calc(var(--t, 48px) * .04); margin-left: .3em; }
+.marca .nombre { font-family: var(--titulo); line-height: 1; color: var(--tinta); }
+.marca .nombre b { display: block; font-weight: 900; font-size: calc(var(--t, 48px) * .4); }
+.marca .nombre i { display: block; font-style: normal; margin-top: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: .2em; font-size: calc(var(--t, 48px) * .18); color: var(--magenta); }
+.escenario.degradada .marca-fija .nombre { display: none; }
+
+/* Controles */
+.controles { position: absolute; left: 72px; right: 72px; bottom: 34px; display: flex; align-items: center; gap: 20px; z-index: 5; }
+.barra { flex: 1; height: 3px; border-radius: 3px; background: var(--linea); overflow: hidden; }
+.barra i { display: block; height: 100%; width: 0; background: var(--degradado); border-radius: 3px; transition: width .5s var(--curva); }
+.escenario.degradada .barra { background: rgba(255,255,255,.3); }
+.escenario.degradada .barra i { background: #fff; }
+.botones { display: flex; gap: 6px; }
+.boton {
+  width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--borde); background: #fff; color: var(--tinta);
+  display: grid; place-items: center; cursor: pointer; transition: transform .15s, opacity .2s;
+}
+.boton:hover { transform: translateY(-1px); }
+.boton:disabled { opacity: .3; cursor: default; transform: none; }
+.boton svg { width: 18px; height: 18px; }
+.escenario.degradada .boton { border-color: rgba(255,255,255,.5); background: rgba(255,255,255,.12); color: #fff; }
+
+/* ---------- Diapositivas ---------- */
+.diapositiva {
+  position: absolute; left: 72px; right: 72px; top: 128px; bottom: 92px;
+  opacity: 0; visibility: hidden; transform: translateY(16px);
+  transition: opacity .4s var(--curva), transform .4s var(--curva), visibility 0s .4s;
+}
+.diapositiva.on { opacity: 1; visibility: visible; transform: none; transition: opacity .45s var(--curva), transform .45s var(--curva), visibility 0s; }
+.diapositiva.on [data-a] { animation: sube .55s var(--curva) both; animation-delay: calc(var(--d, 0) * 1s); }
+.diapositiva.on [data-a="aparece"] { animation-name: aparece; }
+.diapositiva.on [data-a="derecha"] { animation-name: derecha; animation-duration: .8s; }
+@keyframes sube { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+@keyframes aparece { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes derecha { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: none; } }
+
+/* Piezas de texto */
+.rotulo { font: 700 15px var(--titulo); letter-spacing: .22em; text-transform: uppercase; color: var(--magenta); }
+.titulo { margin: 16px 0 0; font-family: var(--titulo); font-weight: 900; line-height: 1.02; letter-spacing: -.02em; color: var(--tinta); font-size: var(--ts, 56px); text-wrap: balance; }
+.parrafo { margin: 20px 0 0; font: 300 var(--ps, 22px)/1.5 var(--cuerpo); color: var(--texto); }
+.parrafo b, .detalle b { font-weight: 600; color: var(--tinta); }
+.pie { font: 400 14px/1.45 var(--cuerpo); color: var(--pie); }
+.cifra .v { font: 900 var(--cs, 44px)/1 var(--titulo); letter-spacing: -.02em; color: var(--tinta); font-variant-numeric: tabular-nums; }
+.cifra .t { margin-top: 8px; font: 400 16px/1.4 var(--cuerpo); color: var(--suave); }
+.grad-texto { background: var(--degradado); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tarjeta { background: #fff; border-radius: 16px; box-shadow: var(--sombra); }
+.etiqueta { font: 700 10.5px var(--titulo); letter-spacing: .16em; text-transform: uppercase; color: var(--oscuro); }
+.chip { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 5px 11px; font: 600 12px var(--cuerpo); background: var(--fondo); color: var(--oscuro); }
+.encabezado { display: flex; justify-content: space-between; align-items: flex-end; gap: 48px; }
+.ico { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.pista { font: 600 12px var(--titulo); letter-spacing: .14em; text-transform: uppercase; color: #8b93a1; display: inline-flex; gap: 8px; align-items: center; }
+.pista::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--magenta); animation: late 1.6s ease-in-out infinite; }
+@keyframes late { 50% { opacity: .25; } }
+
+/* Botones seleccionables dentro de las diapositivas */
+.opcion { cursor: pointer; border: 0; text-align: left; transition: translate .2s var(--curva), box-shadow .2s, background-color .2s, color .2s; }
+.opcion:hover { translate: 0 -2px; }
+.opcion.sel { background: var(--oscuro); color: #fff; box-shadow: 0 16px 40px rgba(60,57,80,.25); }
+.opcion.sel .etiqueta, .opcion.sel .sub { color: rgba(255,255,255,.75); }
+
+/* ---------- 1 · Portada ---------- */
+#portada .texto { position: relative; z-index: 2; width: 760px; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+#portada .bloque { position: absolute; right: -140px; top: 20px; width: 860px; height: 700px; background: var(--degradado); clip-path: polygon(14% 0, 100% 0, 100% 100%, 0 100%); }
+#portada .pila { position: absolute; right: 30px; top: 70px; width: 620px; height: 560px; }
+#portada .mini { position: absolute; background: #fff; border-radius: 16px; box-shadow: 0 24px 60px rgba(16,20,30,.2); padding: 20px 22px; font-family: var(--cuerpo); }
+#portada .mini .etiqueta { margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+#portada .mini .etiqueta::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #1f9d5b; }
+.m1 { left: 0; top: 0; width: 420px; rotate: -3deg; }
+.m2 { right: 0; top: 190px; width: 380px; rotate: 2deg; }
+.m3 { left: 40px; top: 360px; width: 400px; rotate: -1.5deg; }
+.burbuja { background: var(--fondo); border-radius: 12px 12px 12px 4px; padding: 10px 12px; font-size: 14px; color: var(--texto); }
+.burbuja.yo { background: var(--oscuro); color: #fff; border-radius: 12px 12px 4px 12px; margin-left: 60px; margin-bottom: 8px; }
+.fuente { margin-top: 8px; font: 600 11px var(--titulo); letter-spacing: .06em; color: var(--magenta); }
+.barras-mini { display: flex; align-items: flex-end; gap: 6px; height: 70px; }
+.barras-mini i { flex: 1; border-radius: 4px 4px 0 0; background: var(--gris-azul); }
+.barras-mini i:last-child { background: var(--degradado); }
+.doc-linea { height: 8px; border-radius: 4px; background: #e8ecee; margin-top: 8px; }
+#portada .meta { margin-top: 48px; display: flex; gap: 28px; font: 600 13px var(--titulo); letter-spacing: .12em; text-transform: uppercase; color: #8b93a1; }
+
+/* ---------- 2 · Por qué ahora ---------- */
+.tres { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 44px; }
+.tres .tarjeta { padding: 30px 30px 26px; display: flex; flex-direction: column; gap: 14px; min-height: 250px; }
+.tres .cifra .v { --cs: 64px; }
+.tres .pie { margin-top: auto; }
+.escalera { margin-top: 34px; display: grid; grid-template-columns: 300px 1fr; gap: 28px; align-items: center; }
+.apilada { display: flex; height: 54px; border-radius: 12px; overflow: hidden; font: 700 14px var(--titulo); color: #fff; }
+.apilada span { display: flex; align-items: center; padding-left: 16px; white-space: nowrap; }
+.apilada .b1 { width: 63%; background: var(--gris-azul); color: var(--oscuro); }
+.apilada .b2 { width: 24%; background: #8f8ba6; }
+.apilada .b3 { width: 13%; background: var(--degradado); }
+.frase { font: 300 26px/1.35 var(--cuerpo); color: var(--tinta); }
+
+/* ---------- 3 · Problemática ---------- */
+.dos { display: grid; grid-template-columns: 720px 1fr; gap: 36px; margin-top: 34px; height: calc(100% - 170px); }
+.dolores { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 1fr; gap: 16px; }
+.dolor { background: #fff; border-radius: 16px; box-shadow: var(--sombra); padding: 20px 22px; display: flex; flex-direction: column; gap: 10px; }
+.dolor .n { font: 900 15px var(--titulo); color: var(--magenta); }
+.dolor.sel .n { color: var(--naranja); }
+.dolor .h { font: 800 19px/1.2 var(--titulo); }
+.detalle { padding: 30px 34px; display: flex; flex-direction: column; gap: 18px; }
+.detalle .h { font: 900 28px/1.1 var(--titulo); letter-spacing: -.01em; }
+.fila-detalle { display: grid; grid-template-columns: 170px 1fr; gap: 18px; padding-top: 16px; border-top: 1px solid var(--linea); font: 400 17px/1.5 var(--cuerpo); color: var(--texto); }
+.fila-detalle .etiqueta { padding-top: 4px; }
+.fila-detalle.ia { background: var(--fondo); border: 0; border-radius: 12px; padding: 16px; }
+.fila-detalle.ia .etiqueta { color: var(--magenta); }
+.cambia { animation: aparece .35s var(--curva); }
+
+/* ---------- 4 · Viakon ---------- */
+.ventana { border-radius: 16px; overflow: hidden; border: 1px solid var(--borde); background: #f7f8fa; box-shadow: 0 24px 60px rgba(16,20,30,.18); }
+.ventana .barra-nav { height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #eef0f4; border-bottom: 1px solid #e5e8ee; }
+.ventana .barra-nav i { width: 10px; height: 10px; border-radius: 50%; background: #fc5f57; }
+.ventana .barra-nav i:nth-child(2) { background: #febc2e; }
+.ventana .barra-nav i:nth-child(3) { background: #28c840; }
+.ventana .url { margin: 0 auto; height: 24px; width: 60%; border-radius: 6px; background: #fff; display: grid; place-items: center; font: 500 11px system-ui, sans-serif; color: #5b6270; }
+.ventana .url b { color: #1f9d5b; font-weight: 600; margin-right: 4px; }
+.ventana img { display: block; width: 100%; }
+.viakon { display: grid; grid-template-columns: 920px 1fr; gap: 48px; margin-top: 30px; }
+.viakon .cifras { display: flex; flex-direction: column; justify-content: space-between; gap: 14px; padding: 4px 0; height: 494px; }
+.viakon .cifra .v { --cs: 40px; }
+.viakon .cifra .t { margin-top: 6px; font-size: 15px; }
+
+/* ---------- 5 · El camino ---------- */
+.camino { position: relative; display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin-top: 92px; }
+.camino::before { content: ""; position: absolute; left: 40px; right: 40px; top: 0; height: 3px; background: var(--linea); }
+.camino .trazo { position: absolute; left: 40px; top: 0; height: 3px; width: 0; background: var(--degradado); z-index: 1; }
+.diapositiva.on .camino .trazo { animation: trazo 2.2s .5s var(--curva) forwards; }
+@keyframes trazo { to { width: calc(100% - 80px); } }
+.etapa { position: relative; z-index: 2; min-height: 300px; background: #fff; border-radius: 16px; box-shadow: var(--sombra); padding: 0 24px 26px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 0; text-align: left; transition: translate .2s var(--curva), box-shadow .2s; }
+.etapa:hover { translate: 0 -4px; box-shadow: 0 20px 50px rgba(0,0,0,.1); }
+.etapa .num { width: 68px; height: 68px; border-radius: 50%; display: grid; place-items: center; background: var(--oscuro); color: #fff; font: 900 26px var(--titulo); margin-top: -34px; border: 5px solid var(--fondo); box-sizing: content-box; }
+.etapa:nth-child(2) .num { background: var(--degradado); }
+.etapa .h { font: 900 25px/1.1 var(--titulo); margin-top: 10px; }
+.etapa .q { font: 300 19px/1.4 var(--cuerpo); color: var(--texto); }
+.etapa .e { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--linea); font: 600 14px/1.4 var(--cuerpo); color: var(--oscuro); }
+.etapa .e::before { content: "Entregable"; display: block; font: 700 10.5px var(--titulo); letter-spacing: .16em; text-transform: uppercase; color: var(--magenta); margin-bottom: 4px; }
+.etapa .ir { position: absolute; right: 20px; top: 18px; font: 700 11px var(--titulo); letter-spacing: .12em; color: #8b93a1; text-transform: uppercase; }
+
+/* ---------- 6 · Matriz ---------- */
+.matriz-capa { display: grid; grid-template-columns: 500px 1fr; gap: 48px; height: 100%; }
+.matriz { position: relative; background: #fff; border-radius: 16px; box-shadow: var(--sombra); height: 100%; }
+.plano { position: absolute; left: 70px; right: 30px; top: 30px; bottom: 60px; }
+.plano .cuad { position: absolute; width: 50%; height: 50%; padding: 14px 16px; font: 700 12px var(--titulo); letter-spacing: .14em; text-transform: uppercase; color: #a0a7b2; }
+.plano .q1 { right: 0; top: 0; background: linear-gradient(135deg, rgba(243,139,32,.10), rgba(238,42,123,.10)); color: var(--magenta); text-align: right; border-radius: 0 12px 0 0; }
+.plano .q2 { left: 0; top: 0; border-right: 1px dashed var(--borde); border-bottom: 1px dashed var(--borde); }
+.plano .q3 { left: 0; bottom: 0; border-right: 1px dashed var(--borde); }
+.plano .q4 { right: 0; bottom: 0; border-top: 1px dashed var(--borde); text-align: right; }
+.eje-x, .eje-y { position: absolute; font: 700 12px var(--titulo); letter-spacing: .16em; text-transform: uppercase; color: var(--oscuro); }
+.eje-x { left: 70px; right: 30px; bottom: 22px; display: flex; justify-content: space-between; }
+.eje-y { left: 0; top: 30px; bottom: 60px; width: 60px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
+.eje-y span { writing-mode: vertical-rl; transform: rotate(180deg); }
+.punto { position: absolute; translate: -50% -50%; display: flex; align-items: center; gap: 10px; border: 0; background: transparent; cursor: pointer; padding: 4px; }
+.punto i { width: 20px; height: 20px; border-radius: 50%; background: var(--oscuro); box-shadow: 0 0 0 5px rgba(60,57,80,.12); transition: transform .2s; flex-shrink: 0; }
+.punto.alto i { background: var(--degradado); box-shadow: 0 0 0 6px rgba(239,90,76,.18); }
+.punto span { font: 600 14px var(--cuerpo); color: var(--tinta); background: rgba(255,255,255,.9); padding: 2px 6px; border-radius: 6px; white-space: nowrap; }
+.punto.izq { flex-direction: row-reverse; translate: calc(-100% + 22px) -50%; }
+.punto:hover i, .punto.sel i { transform: scale(1.3); }
+.punto.sel span { background: var(--oscuro); color: #fff; }
+.ficha-matriz { margin-top: 26px; padding: 22px 24px; display: grid; gap: 10px; }
+.ficha-matriz .h { font: 900 22px/1.15 var(--titulo); }
+.ficha-matriz .datos { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ---------- 7 · Objetivo ---------- */
+.objetivo-capa { display: grid; grid-template-columns: 520px 1fr; gap: 48px; height: 100%; }
+.pestanas { display: flex; gap: 8px; margin-bottom: 18px; }
+.pestana { border: 1px solid var(--borde); background: #fff; border-radius: 999px; padding: 10px 18px; font: 700 14px var(--titulo); cursor: pointer; color: var(--oscuro); transition: background-color .2s, color .2s; }
+.pestana.sel { background: var(--oscuro); color: #fff; border-color: var(--oscuro); }
+.objetivo { padding: 36px 40px; display: flex; flex-direction: column; gap: 24px; }
+.objetivo .meta-frase { font: 900 34px/1.15 var(--titulo); letter-spacing: -.01em; }
+.regla { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.hoy-meta { display: grid; grid-template-columns: 1fr 70px 1fr; align-items: center; background: var(--fondo); border-radius: 14px; padding: 22px 24px; }
+.hoy-meta .lado .etiqueta { margin-bottom: 6px; }
+.hoy-meta .lado .v { font: 900 40px/1.05 var(--titulo); }
+.hoy-meta .lado.hoy .v { color: #8b93a1; text-decoration: line-through; text-decoration-thickness: 3px; text-decoration-color: rgba(139,147,161,.6); }
+.hoy-meta .flecha { display: grid; place-items: center; color: var(--magenta); }
+.hoy-meta .flecha svg { width: 34px; height: 34px; }
+.dato-obj { display: grid; gap: 6px; font: 400 18px/1.45 var(--cuerpo); color: var(--texto); }
+.principios { margin-top: 30px; display: grid; gap: 14px; }
+.principio { display: flex; gap: 14px; align-items: flex-start; font: 400 18px/1.45 var(--cuerpo); color: var(--texto); }
+.principio .ico { color: var(--magenta); margin-top: 2px; }
+
+/* ---------- 8 · Módulos ---------- */
+.modulos-capa { display: grid; grid-template-columns: 1fr 430px; gap: 32px; margin-top: 26px; height: calc(100% - 150px); }
+.arquitectura { display: grid; grid-template-columns: 1fr 200px; gap: 14px; }
+.capas { display: grid; grid-template-rows: repeat(5, 1fr); gap: 10px; }
+.capa { display: grid; grid-template-columns: 140px 1fr; gap: 12px; align-items: stretch; }
+.capa .nombre-capa { display: flex; align-items: center; font: 700 11px/1.3 var(--titulo); letter-spacing: .16em; text-transform: uppercase; color: var(--oscuro); border-right: 3px solid var(--linea); padding-right: 10px; }
+.capa:nth-child(2) .nombre-capa { border-right-color: var(--naranja); }
+.piezas { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 10px; }
+.pieza { background: #fff; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,.05); padding: 10px 14px; display: flex; align-items: center; font: 700 15px/1.2 var(--titulo); color: var(--tinta); }
+.control { display: grid; grid-template-rows: auto repeat(3, 1fr); gap: 10px; }
+.control .nombre-capa { font: 700 11px var(--titulo); letter-spacing: .16em; text-transform: uppercase; color: var(--oscuro); padding: 6px 0 4px; border-bottom: 3px solid var(--magenta); }
+.ficha-modulo { padding: 28px 30px; display: flex; flex-direction: column; gap: 16px; }
+.ficha-modulo .fila-detalle, .ficha-fase .fila-detalle { grid-template-columns: 112px 1fr; gap: 14px; font-size: 16px; }
+.ficha-modulo .h { font: 900 26px/1.1 var(--titulo); }
+.ficha-modulo .capa-de { font: 700 11px var(--titulo); letter-spacing: .16em; text-transform: uppercase; color: var(--magenta); }
+
+/* ---------- 9 · Fuentes ---------- */
+.fuentes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-top: 30px; }
+.columna-fuente { display: flex; flex-direction: column; gap: 10px; }
+.columna-fuente .cab { display: flex; align-items: center; gap: 10px; padding: 0 4px 10px; border-bottom: 3px solid var(--oscuro); font: 900 19px var(--titulo); }
+.columna-fuente .cab .ico { color: var(--magenta); }
+.item-fuente { background: #fff; border: 0; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,.05); padding: 13px 14px; display: flex; gap: 12px; align-items: flex-start; text-align: left; cursor: pointer; font: 400 15.5px/1.35 var(--cuerpo); color: var(--texto); transition: background-color .2s, color .2s, translate .2s; min-height: 64px; }
+.item-fuente:hover { translate: 0 -2px; }
+.item-fuente .caja { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--borde); flex-shrink: 0; display: grid; place-items: center; transition: background-color .2s, border-color .2s; }
+.item-fuente .caja svg { width: 14px; height: 14px; stroke: #fff; stroke-width: 3; fill: none; opacity: 0; }
+.item-fuente.listo { background: var(--oscuro); color: #fff; }
+.item-fuente.listo .caja { background: var(--magenta); border-color: var(--magenta); }
+.item-fuente.listo .caja svg { opacity: 1; }
+.avance { display: flex; align-items: center; gap: 16px; min-width: 380px; }
+.avance .pista-barra { flex: 1; height: 10px; border-radius: 10px; background: #fff; box-shadow: inset 0 0 0 1px var(--linea); overflow: hidden; }
+.avance .pista-barra i { display: block; height: 100%; width: 0; background: var(--degradado); transition: width .4s var(--curva); }
+.avance .cuenta { font: 900 22px var(--titulo); white-space: nowrap; }
+.no-necesitamos { margin-top: 24px; display: flex; gap: 40px; align-items: center; background: #fff; border-radius: 14px; padding: 16px 24px; box-shadow: var(--sombra); font: 400 17px var(--cuerpo); color: var(--texto); }
+.no-necesitamos b { font-weight: 600; color: var(--tinta); }
+
+/* ---------- 10 · Plan ---------- */
+.plan-capa { display: grid; grid-template-columns: 1fr 400px; gap: 32px; margin-top: 26px; }
+.gantt { padding: 22px 24px 18px; }
+.gantt-cab, .gantt-fila { display: grid; grid-template-columns: 250px repeat(12, 1fr); align-items: center; }
+.gantt-cab { font: 700 11px var(--titulo); letter-spacing: .1em; color: #8b93a1; padding-bottom: 10px; border-bottom: 1px solid var(--linea); }
+.gantt-cab span { text-align: center; }
+.gantt-fila { border: 0; background: transparent; width: 100%; padding: 0; height: 52px; cursor: pointer; border-bottom: 1px solid #eef1f2; text-align: left; position: relative; }
+.gantt-fila:hover { background: #fafbfb; }
+.gantt-fila .nombre { font: 700 15px/1.2 var(--titulo); color: var(--tinta); padding-right: 12px; }
+.gantt-fila .tramo { height: 22px; border-radius: 11px; background: var(--gris-azul); transform-origin: left; }
+.gantt-fila.sel { background: var(--fondo); }
+.gantt-fila.sel .tramo { background: var(--degradado); }
+.gantt-fila.hito .tramo { width: 22px; height: 22px; border-radius: 4px; transform: rotate(45deg); justify-self: center; background: var(--magenta); }
+.diapositiva.on .gantt-fila .tramo { animation: crece .7s var(--curva) both; animation-delay: calc(.5s + var(--i) * .18s); }
+.diapositiva.on .gantt-fila.hito .tramo { animation-name: aparece; }
+@keyframes crece { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.ritmo { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; }
+.ficha-fase { padding: 26px 28px; display: flex; flex-direction: column; gap: 14px; }
+.ficha-fase .h { font: 900 24px/1.15 var(--titulo); }
+.ficha-fase ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font: 400 16px/1.45 var(--cuerpo); color: var(--texto); }
+
+/* ---------- 11 · Control ---------- */
+.control-capa { display: grid; grid-template-columns: 560px 1fr; gap: 48px; margin-top: 30px; }
+.cadencia { display: grid; gap: 12px; }
+.paso-cad { display: grid; grid-template-columns: 130px 1fr; gap: 18px; align-items: start; background: #fff; border-radius: 14px; box-shadow: var(--sombra); padding: 18px 20px; }
+.paso-cad .cuando { font: 900 15px var(--titulo); letter-spacing: .04em; text-transform: uppercase; color: var(--magenta); padding-top: 3px; }
+.paso-cad .que { font: 400 17px/1.45 var(--cuerpo); color: var(--texto); }
+.paso-cad .que b { font-weight: 600; color: var(--tinta); }
+.garantias { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.garantia { background: #fff; border-radius: 14px; box-shadow: var(--sombra); padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start; font: 400 17px/1.4 var(--cuerpo); color: var(--texto); }
+.garantia .ico { color: var(--naranja); width: 24px; height: 24px; }
+.garantia b { display: block; font: 800 16px/1.25 var(--titulo); color: var(--tinta); margin-bottom: 4px; }
+
+/* ---------- 12 · Capacidades ---------- */
+.capacidades-capa { display: grid; grid-template-columns: 1fr 470px; gap: 32px; margin-top: 26px; height: calc(100% - 150px); }
+.rejilla { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; gap: 14px; }
+.capacidad { background: #fff; border-radius: 14px; box-shadow: 0 6px 18px rgba(0,0,0,.05); padding: 16px 18px; display: flex; gap: 14px; align-items: center; }
+.capacidad .icono { width: 46px; height: 46px; border-radius: 12px; background: var(--fondo); display: grid; place-items: center; color: var(--magenta); flex-shrink: 0; transition: background-color .2s, color .2s; }
+.capacidad.sel .icono { background: var(--degradado); color: #fff; }
+.capacidad .h { font: 800 16.5px/1.2 var(--titulo); }
+.ficha-cap { padding: 30px 32px; display: flex; flex-direction: column; gap: 18px; position: relative; overflow: hidden; }
+.ficha-cap::before { content: ""; position: absolute; left: 0; top: 0; right: 0; height: 6px; background: var(--degradado); }
+.ficha-cap .icono-grande { width: 64px; height: 64px; border-radius: 16px; background: var(--degradado); color: #fff; display: grid; place-items: center; }
+.ficha-cap .icono-grande .ico { width: 32px; height: 32px; }
+.ficha-cap .h { font: 900 30px/1.1 var(--titulo); letter-spacing: -.01em; }
+.ficha-cap ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font: 400 17px/1.45 var(--cuerpo); color: var(--texto); }
+.hecho { display: flex; flex-wrap: wrap; gap: 8px; }
+.hecho .chip { background: var(--oscuro); color: #fff; }
+
+/* ---------- 13 · Iguala ---------- */
+.iguala-capa { display: grid; grid-template-columns: 470px 1fr; gap: 44px; margin-top: 30px; }
+.incluye { display: grid; gap: 12px; margin-top: 8px; }
+.incluye div { display: flex; gap: 12px; align-items: flex-start; font: 400 18px/1.4 var(--cuerpo); color: var(--texto); }
+.incluye .ico { color: var(--magenta); margin-top: 2px; }
+.planes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.plan { background: #fff; border-radius: 16px; box-shadow: var(--sombra); padding: 22px 22px 18px; display: flex; flex-direction: column; gap: 12px; }
+.plan .nombre-plan { font: 900 21px var(--titulo); }
+.plan .precio { font: 900 36px/1 var(--titulo); letter-spacing: -.02em; }
+.plan .precio small { display: block; margin-top: 6px; font: 600 11px var(--titulo); letter-spacing: .12em; text-transform: uppercase; color: #8b93a1; }
+.plan.sel .precio small { color: rgba(255,255,255,.7); }
+.plan dl { margin: 0; display: grid; }
+.plan dl div { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid var(--linea); font: 400 14.5px var(--cuerpo); }
+.plan.sel dl div { border-top-color: rgba(255,255,255,.18); }
+.plan dt { color: inherit; opacity: .75; }
+.plan dd { margin: 0; font-weight: 600; text-align: right; }
+.semestre { margin-top: 18px; padding: 20px 22px; }
+.meses { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 12px; }
+.mes { background: var(--fondo); border-radius: 12px; padding: 12px 12px 14px; min-height: 104px; display: flex; flex-direction: column; gap: 6px; }
+.mes .etiqueta { color: var(--magenta); }
+.mes p { margin: 0; font: 600 14px/1.35 var(--cuerpo); color: var(--tinta); }
+.condiciones { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ---------- 14 · Cierre ---------- */
+#cierre .texto { width: 960px; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+#cierre .rotulo { color: rgba(255,255,255,.85); }
+#cierre .titulo, #cierre .parrafo { color: #fff; }
+.pasos-cierre { margin-top: 36px; display: grid; gap: 14px; max-width: 860px; }
+.pasos-cierre div { display: grid; grid-template-columns: 54px 1fr; gap: 16px; align-items: center; font: 400 21px/1.4 var(--cuerpo); color: #fff; }
+.pasos-cierre span { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,.7); display: grid; place-items: center; font: 900 18px var(--titulo); }
+.contacto { margin-top: 44px; display: flex; gap: 36px; font: 400 18px var(--cuerpo); color: #fff; }
+.contacto b { font-weight: 600; }
+#cierre .marca-grande { position: absolute; right: 40px; top: 50%; margin-top: -130px; }
+
+/* ---------- Índice ---------- */
+.indice { position: absolute; inset: 0; z-index: 20; background: rgba(240,243,242,.97); display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; padding: 140px 120px 100px; opacity: 0; visibility: hidden; transition: opacity .3s, visibility 0s .3s; }
+.indice.abierto { opacity: 1; visibility: visible; transition: opacity .3s, visibility 0s; }
+.indice h3 { margin: 0 0 18px; font: 700 15px var(--titulo); letter-spacing: .22em; text-transform: uppercase; color: var(--magenta); }
+.indice ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.indice button { width: 100%; text-align: left; border: 0; background: transparent; padding: 10px 14px; border-radius: 10px; display: flex; gap: 16px; font: 700 20px var(--titulo); color: var(--tinta); cursor: pointer; }
+.indice button:hover, .indice button.actual { background: #fff; box-shadow: var(--sombra); }
+.indice button span { color: #8b93a1; width: 30px; font-variant-numeric: tabular-nums; }
+.cerrar-indice { position: absolute; right: 72px; top: 44px; }
+
+.girar { display: none; position: fixed; left: 0; right: 0; bottom: 16px; text-align: center; font: 600 13px var(--cuerpo); color: var(--pie); padding: 0 16px; }
+@media (orientation: portrait) and (max-width: 700px) { .girar { display: block; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .diapositiva, .diapositiva.on { transition: none; }
+  .diapositiva.on [data-a], .diapositiva.on .camino .trazo, .diapositiva.on .gantt-fila .tramo, .pista::before { animation: none !important; }
+  .diapositiva.on .camino .trazo { width: calc(100% - 80px); }
+}
+</style>
+</head>
+<body>
+
+<div class="escenario" id="escenario">
+  <div class="fondo-degradado"></div>
+
+  <div class="marca-fija">
+    <div class="marca" style="--t:48px"><div class="iso" aria-label="Narrative Studio"><span><b>N</b><i>studio</i></span></div><div class="nombre"><b>Narrative Studio</b><i>AI</i></div></div>
+  </div>
+  <div class="contador"><span class="capitulo" id="capitulo">Contexto</span><span id="numero">01 / 14</span></div>
+
+  <!-- 1 · Portada -->
+  <section class="diapositiva" id="portada" data-capitulo="Contexto" data-nombre="Portada">
+    <div class="bloque" data-a="derecha" style="--d:.3"></div>
+    <div class="pila">
+      <div class="mini m1" data-a style="--d:.7">
+        <div class="etiqueta">Asistente técnico · en línea</div>
+        <div class="burbuja yo">¿Qué cable uso para una acometida subterránea?</div>
+        <div class="burbuja">Para acometida subterránea en baja tensión se recomienda el cable DRS XLP 600 V 90 °C, en ducto o directamente enterrado.</div>
+        <div class="fuente">Fuente: ficha técnica VK-041 · pág. 1</div>
+      </div>
+      <div class="mini m2" data-a style="--d:.95">
+        <div class="etiqueta">Tablero de dirección</div>
+        <div class="barras-mini"><i style="height:38%"></i><i style="height:52%"></i><i style="height:45%"></i><i style="height:66%"></i><i style="height:72%"></i><i style="height:95%"></i></div>
+        <div class="pie" style="margin-top:10px">Conversaciones atendidas por semana</div>
+      </div>
+      <div class="mini m3" data-a style="--d:1.2">
+        <div class="etiqueta">Documento generado</div>
+        <div style="font:800 16px var(--titulo)">Procedimiento de bloqueo de energías</div>
+        <div class="doc-linea" style="width:92%"></div><div class="doc-linea" style="width:80%"></div><div class="doc-linea" style="width:86%"></div>
+        <div class="fuente">Requisito citado: NOM-004-STPS · numeral 5.2</div>
+      </div>
+    </div>
+    <div class="texto">
+      <div class="rotulo" data-a style="--d:.1">Narrative Studio AI · Propuesta para <span data-cliente>Grupo Xignux</span></div>
+      <h1 class="titulo" style="--ts:88px; --d:.25" data-a>IA que trabaja dentro de tu operación.</h1>
+      <p class="parrafo" style="--ps:24px; max-width:640px; --d:.45" data-a>Una propuesta para desarrollar, operar y mejorar <b>sistemas de inteligencia artificial</b> en tu empresa, con un equipo dedicado y una iguala mensual.</p>
+      <div class="meta" data-a style="--d:.6"><span>Monterrey, N. L.</span><span>Octubre 2026</span><span>Confidencial</span></div>
+    </div>
+  </section>
+
+  <!-- 2 · Por qué ahora -->
+  <section class="diapositiva" id="momento" data-capitulo="Contexto" data-nombre="Por qué ahora">
+    <div class="rotulo" data-a>Por qué ahora</div>
+    <h2 class="titulo" style="--ts:54px; max-width:1300px" data-a>La pregunta ya no es si usar IA. Es si la metes a tu operación antes que tu competencia.</h2>
+    <div class="tres">
+      <div class="tarjeta" data-a="aparece" style="--d:.35">
+        <div class="cifra"><div class="v"><span data-cuenta="24">24</span>% → <span class="grad-texto"><span data-cuenta="48">48</span>%</span></div><div class="t">de las empresas en México ya usa inteligencia artificial. La cifra se duplicó en nueve meses.</div></div>
+        <div class="pie">Banxico, Encuesta Mensual de Actividad Económica Regional, septiembre 2025 y junio 2026.</div>
+      </div>
+      <div class="tarjeta" data-a="aparece" style="--d:.5">
+        <div class="cifra"><div class="v grad-texto"><span data-cuenta="13">13</span>%</div><div class="t">de las empresas que usan IA en México opera sistemas avanzados o agentes. El resto se queda en usos básicos.</div></div>
+        <div class="pie">UNIAT con datos de Strand Partners para AWS, 2026.</div>
+      </div>
+      <div class="tarjeta" data-a="aparece" style="--d:.65">
+        <div class="cifra"><div class="v"><span data-cuenta="39">39</span>%</div><div class="t">de las empresas en el mundo ve algún impacto de la IA en sus utilidades, aunque el 88% ya la usa.</div></div>
+        <div class="pie">McKinsey, The state of AI in 2025.</div>
+      </div>
+    </div>
+    <div class="escalera" data-a style="--d:.9">
+      <div class="etiqueta" style="font-size:12px">Profundidad de uso en México</div>
+      <div class="apilada"><span class="b1">63% · básico</span><span class="b2">24% · intermedio</span><span class="b3">13%</span></div>
+    </div>
+    <p class="frase" data-a style="--d:1.1; margin:30px 0 0; max-width:1250px">La ventaja no está en tener una suscripción a ChatGPT. Está en <b style="font-weight:600">sistemas conectados a tus datos, tus procesos y tu gente</b>.</p>
+  </section>
+
+  <!-- 3 · Problemática -->
+  <section class="diapositiva" id="problema" data-capitulo="Contexto" data-nombre="La problemática">
+    <div class="encabezado">
+      <div>
+        <div class="rotulo" data-a>La problemática</div>
+        <h2 class="titulo" style="--ts:52px; max-width:980px" data-a>Dónde pierde tiempo hoy una empresa grande.</h2>
+      </div>
+      <span class="pista" data-a style="--d:.4">Toca cada tema</span>
+    </div>
+    <div class="dos">
+      <div class="dolores" id="dolores"></div>
+      <div class="tarjeta detalle" id="detalle-dolor" data-a="aparece" style="--d:.4"></div>
+    </div>
+  </section>
+
+  <!-- 4 · Viakon -->
+  <section class="diapositiva" id="viakon" data-capitulo="Contexto" data-nombre="Ya lo hicimos: Viakon">
+    <div class="encabezado">
+      <div>
+        <div class="rotulo" data-a>Ya lo hicimos en casa</div>
+        <h2 class="titulo" style="--ts:52px; max-width:900px" data-a>Viakon: el catálogo técnico, convertido en respuestas.</h2>
+      </div>
+      <p class="parrafo" style="--ps:19px; max-width:520px; margin:0 0 4px" data-a>ai.viakon.com está <b>en producción</b> desde el 13 de septiembre de 2026. Responde solo con el material de Viakon y muestra la fuente de cada dato.</p>
+    </div>
+    <div class="viakon">
+      <div class="ventana" data-a="aparece" style="--d:.35">
+        <div class="barra-nav"><i></i><i></i><i></i><div class="url"><span><b>●</b>ai.viakon.com</span></div></div>
+        <img src="assets/viakon-inicio.png" alt="Portada de ai.viakon.com con el selector de cable y el asistente de IA" width="1440" height="900" style="height:456px; object-fit:cover; object-position:top">
+      </div>
+      <div class="cifras">
+        <div class="cifra" data-a style="--d:.5"><div class="v">63</div><div class="t">cables del catálogo oficial, cada uno con su ficha técnica</div></div>
+        <div class="cifra" data-a style="--d:.65"><div class="v">414</div><div class="t">criterios escritos por los técnicos de Viakon, publicados palabra por palabra</div></div>
+        <div class="cifra" data-a style="--d:.8"><div class="v">722</div><div class="t">conversaciones registradas y medidas en su panel, del 1 de agosto al 28 de septiembre</div></div>
+        <div class="cifra" data-a style="--d:.95"><div class="v grad-texto">0</div><div class="t">respuestas incorrectas entre las compuestas en código, en la revisión de Viakon</div></div>
+        <div class="pie" data-a style="--d:1.1">Datos del repositorio y del panel de ai.viakon.com.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · El camino -->
+  <section class="diapositiva" id="camino" data-capitulo="El método" data-nombre="El camino">
+    <div class="encabezado">
+      <div>
+        <div class="rotulo" data-a>El método</div>
+        <h2 class="titulo" style="--ts:54px; max-width:1100px" data-a>De un problema de negocio a un sistema operando, en cinco etapas.</h2>
+      </div>
+      <span class="pista" data-a style="--d:.4">Toca una etapa para verla</span>
+    </div>
+    <div class="camino">
+      <span class="trazo"></span>
+      <button type="button" class="etapa" data-ir="problematica" data-a style="--d:.4"><span class="num">1</span><span class="ir">Ver →</span><span class="h">Problemática</span><span class="q">¿Qué nos está costando tiempo y dinero?</span><span class="e">Mapa de procesos priorizado</span></button>
+      <button type="button" class="etapa" data-ir="objetivo" data-a style="--d:.55"><span class="num">2</span><span class="ir">Ver →</span><span class="h">Objetivo</span><span class="q">¿Cómo sabremos que funcionó?</span><span class="e">Indicadores con línea base y meta</span></button>
+      <button type="button" class="etapa" data-ir="modulos" data-a style="--d:.7"><span class="num">3</span><span class="ir">Ver →</span><span class="h">Estructura</span><span class="q">¿Qué módulos hay que construir?</span><span class="e">Arquitectura del sistema</span></button>
+      <button type="button" class="etapa" data-ir="fuentes" data-a style="--d:.85"><span class="num">4</span><span class="ir">Ver →</span><span class="h">Fuentes</span><span class="q">¿Con qué información y accesos?</span><span class="e">Inventario de datos y responsables</span></button>
+      <button type="button" class="etapa" data-ir="plan" data-a style="--d:1"><span class="num">5</span><span class="ir">Ver →</span><span class="h">Plan y ejecución</span><span class="q">¿Cuándo, quién y con qué entregas?</span><span class="e">Ruta de entregas y tablero de avance</span></button>
+    </div>
+    <p class="frase" data-a style="--d:1.3; margin-top:48px; max-width:1200px">Cada etapa termina con un entregable que tu equipo revisa y aprueba. <b style="font-weight:600">Nada avanza a ciegas.</b></p>
+  </section>
+
+  <!-- 6 · Etapa 1 -->
+  <section class="diapositiva" id="problematica" data-capitulo="El método" data-nombre="1 · Problemática">
+    <div class="matriz-capa">
+      <div>
+        <div class="rotulo" data-a>Etapa 1 · Problemática</div>
+        <h2 class="titulo" style="--ts:48px" data-a>Priorizamos por impacto y factibilidad.</h2>
+        <p class="parrafo" style="--ps:19px" data-a>Entrevistamos a directores y dueños de proceso, observamos la operación en sitio y revisamos tres meses de datos. Cada proceso se ubica en la matriz y se empieza por el que más mueve con menos riesgo.</p>
+        <div class="tarjeta ficha-matriz" id="ficha-matriz" data-a="aparece" style="--d:.5"></div>
+      </div>
+      <div class="matriz" data-a="aparece" style="--d:.3">
+        <div class="plano" id="plano">
+          <div class="cuad q2">Planear</div>
+          <div class="cuad q1">Empezar aquí</div>
+          <div class="cuad q3">No por ahora</div>
+          <div class="cuad q4">Ganancias rápidas</div>
+        </div>
+        <div class="eje-y"><span>Más impacto</span><span>Menos</span></div>
+        <div class="eje-x"><span>Menos factible</span><span>Factibilidad →</span><span>Más factible</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · Etapa 2 -->
+  <section class="diapositiva" id="objetivo" data-capitulo="El método" data-nombre="2 · Objetivo">
+    <div class="objetivo-capa">
+      <div>
+        <div class="rotulo" data-a>Etapa 2 · Objetivo</div>
+        <h2 class="titulo" style="--ts:48px" data-a>Cada sistema nace con un número que tiene que mover.</h2>
+        <div class="principios">
+          <div class="principio" data-a style="--d:.35"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span>Un responsable del objetivo <b>de tu lado</b>, con nombre y apellido.</span></div>
+          <div class="principio" data-a style="--d:.45"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span>Se mide desde el primer día, con datos de tu operación.</span></div>
+          <div class="principio" data-a style="--d:.55"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span>Si el número no se mueve, el módulo se corrige o se apaga.</span></div>
+        </div>
+      </div>
+      <div data-a="aparece" style="--d:.3">
+        <div class="pestanas" id="pestanas-obj" role="tablist"></div>
+        <div class="tarjeta objetivo" id="tarjeta-obj"></div>
+        <div class="pie" style="margin-top:12px">Ejemplos ilustrativos. La línea base real sale del diagnóstico.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 · Etapa 3 -->
+  <section class="diapositiva" id="modulos" data-capitulo="El método" data-nombre="3 · Estructura">
+    <div class="encabezado">
+      <div>
+        <div class="rotulo" data-a>Etapa 3 · Estructura</div>
+        <h2 class="titulo" style="--ts:48px; max-width:1100px" data-a>Un sistema son módulos que se construyen y se prueban por separado.</h2>
+      </div>
+      <span class="pista" data-a style="--d:.4">Toca un módulo</span>
+    </div>
+    <div class="modulos-capa">
+      <div class="arquitectura" data-a="aparece" style="--d:.3">
+        <div class="capas" id="capas"></div>
+        <div class="control" id="control"></div>
+      </div>
+      <div class="tarjeta ficha-modulo" id="ficha-modulo" data-a="aparece" style="--d:.45"></div>
+    </div>
+  </section>
+
+  <!-- 9 · Etapa 4 -->
+  <section class="diapositiva" id="fuentes" data-capitulo="El método" data-nombre="4 · Fuentes">
+    <div class="encabezado">
+      <div>
+        <div class="rotulo" data-a>Etapa 4 · Fuentes de información</div>
+        <h2 class="titulo" style="--ts:46px; max-width:980px" data-a>Tomamos tu información y la convertimos en inteligencia disponible.</h2>
+      </div>
+      <div class="avance" data-a style="--d:.4"><span class="pista">Marca lo que ya tienes</span><div class="pista-barra"><i id="avance-barra"></i></div><span class="cuenta" id="avance-cuenta">0 / 20</span></div>
+    </div>
+    <div class="fuentes" id="fuentes-lista"></div>
+    <div class="no-necesitamos" data-a style="--d:.9">
+      <span class="etiqueta" style="color:var(--magenta)">No necesitamos</span>
+      <span>Cambiar tu ERP, comprar equipo nuevo ni detener la operación.</span>
+      <span style="margin-left:auto"><b>Todo bajo convenio de confidencialidad.</b></span>
+    </div>
+  </section>
+
+  <!-- 10 · Etapa 5 -->
+  <section class="diapositiva" id="plan" data-capitulo="El método" data-nombre="5 · Plan y ejecución">
+    <div class="encabezado">
+      <div>
+        <div class="rotulo" data-a>Etapa 5 · Planeación y ejecución</div>
+        <h2 class="titulo" style="--ts:48px; max-width:1100px" data-a>Entregas cada dos semanas, con algo funcionando en cada una.</h2>
+      </div>
+      <span class="pista" data-a style="--d:.4">Toca una fase</span>
+    </div>
+    <div class="plan-capa">
+      <div>
+        <div class="tarjeta gantt" data-a="aparece" style="--d:.3">
+          <div class="gantt-cab"><span style="text-align:left">Primer trimestre</span><span>S1</span><span>S2</span><span>S3</span><span>S4</span><span>S5</span><span>S6</span><span>S7</span><span>S8</span><span>S9</span><span>S10</span><span>S11</span><span>S12</span></div>
+          <div id="gantt-filas"></div>
+        </div>
+        <div class="ritmo" data-a style="--d:1.6"><span class="chip">Junta semanal de 30 min con tu enlace</span><span class="chip">Demo quincenal con dueños de proceso</span><span class="chip">Reporte mensual a dirección</span></div>
+      </div>
+      <div class="tarjeta ficha-fase" id="ficha-fase" data-a="aparece" style="--d:.5"></div>
+    </div>
+  </section>
+
+  <!-- 11 · Control -->
+  <section class="diapositiva" id="control-seguridad" data-capitulo="Cómo trabajamos" data-nombre="Control y seguridad">
+    <div class="rotulo" data-a>Cómo trabajamos juntos</div>
+    <h2 class="titulo" style="--ts:52px" data-a>El control queda de tu lado, en todo momento.</h2>
+    <div class="control-capa">
+      <div class="cadencia">
+        <div class="paso-cad" data-a style="--d:.3"><span class="cuando">Semanal</span><span class="que"><b>Avance con tu enlace.</b> Qué se hizo, qué sigue y qué necesitamos de tu equipo.</span></div>
+        <div class="paso-cad" data-a style="--d:.4"><span class="cuando">Quincenal</span><span class="que"><b>Demo funcionando</b> con los dueños de proceso. Se aprueba o se corrige ahí mismo.</span></div>
+        <div class="paso-cad" data-a style="--d:.5"><span class="cuando">Mensual</span><span class="que"><b>Reporte a dirección:</b> indicadores contra meta, uso, horas invertidas y siguiente prioridad.</span></div>
+        <div class="paso-cad" data-a style="--d:.6"><span class="cuando">Trimestral</span><span class="que"><b>Revisión de objetivos</b> y del plan del siguiente trimestre.</span></div>
+      </div>
+      <div class="garantias">
+        <div class="garantia" data-a="aparece" style="--d:.5"><svg class="ico" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg><span><b>Responde con tus fuentes</b>y cita de dónde sale cada dato.</span></div>
+        <div class="garantia" data-a="aparece" style="--d:.6"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span><b>Admite cuando no sabe</b>y pasa a una persona con el contexto completo.</span></div>
+        <div class="garantia" data-a="aparece" style="--d:.7"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span><b>Tus expertos validan</b>antes de que algo llegue a un cliente.</span></div>
+        <div class="garantia" data-a="aparece" style="--d:.8"><svg class="ico" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span><b>Bitácora de todo</b>cada respuesta y cada acción queda registrada.</span></div>
+        <div class="garantia" data-a="aparece" style="--d:.9"><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span><b>Acceso por roles</b>cada persona ve solo lo que le corresponde.</span></div>
+        <div class="garantia" data-a="aparece" style="--d:1"><svg class="ico" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span><b>Auditoría de seguridad</b>antes de cada lanzamiento.</span></div>
+        <div class="garantia" data-a="aparece" style="--d:1.1"><svg class="ico" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/></svg><span><b>Tus datos no entrenan</b>modelos públicos de IA.</span></div>
+        <div class="garantia" data-a="aparece" style="--d:1.2"><svg class="ico" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.6 7.6a5.5 5.5 0 1 1-7.8 7.8 5.5 5.5 0 0 1 7.8-7.8zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg><span><b>El código y los datos son tuyos</b>si un día nos vamos, se queda todo.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 · Capacidades -->
+  <section class="diapositiva" id="capacidades" data-capitulo="Cómo trabajamos" data-nombre="Nuestras capacidades">
+    <div class="encabezado">
+      <div>
+        <div class="rotulo" data-a>Qué podemos construir</div>
+        <h2 class="titulo" style="--ts:48px" data-a>Nuestras capacidades, a tu disposición.</h2>
+      </div>
+      <span class="pista" data-a style="--d:.4">Toca una capacidad</span>
+    </div>
+    <div class="capacidades-capa">
+      <div class="rejilla" id="rejilla"></div>
+      <div class="tarjeta ficha-cap" id="ficha-cap" data-a="aparece" style="--d:.45"></div>
+    </div>
+  </section>
+
+  <!-- 13 · Iguala -->
+  <section class="diapositiva" id="iguala" data-capitulo="Cómo trabajamos" data-nombre="La iguala mensual">
+    <div class="rotulo" data-a>Modelo de trabajo</div>
+    <h2 class="titulo" style="--ts:50px" data-a>Una iguala mensual: tu equipo de IA, sin crear el área.</h2>
+    <div class="iguala-capa">
+      <div>
+        <div class="incluye">
+          <div data-a style="--d:.3"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span>Equipo de desarrollo asignado a tu cuenta</span></div>
+          <div data-a style="--d:.38"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span>Construcción de módulos nuevos cada mes</span></div>
+          <div data-a style="--d:.46"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span>Hospedaje, monitoreo y respaldos</span></div>
+          <div data-a style="--d:.54"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span>Soporte, correcciones y mejora continua</span></div>
+          <div data-a style="--d:.62"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span>Consumo de IA incluido hasta el tope del plan</span></div>
+          <div data-a style="--d:.7"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span>Reporte mensual de resultados a dirección</span></div>
+        </div>
+        <p class="parrafo" style="--ps:18px; margin-top:26px" data-a>Un área interna equivalente requiere al menos tres perfiles: desarrollo, datos e infraestructura. <b>Con la iguala llegan funcionando desde el primer mes.</b></p>
+      </div>
+      <div data-a="aparece" style="--d:.35">
+        <div class="planes" id="planes"></div>
+        <div class="tarjeta semestre">
+          <div class="etiqueta" id="semestre-titulo">Así se vería tu primer semestre</div>
+          <div class="meses" id="meses"></div>
+        </div>
+        <div class="condiciones"><span class="chip">Precios en MXN + IVA, por empresa o unidad de negocio</span><span class="chip">Sin costo de implementación</span><span class="chip">Contrato inicial de 3 meses</span><span class="chip">Integraciones mayores se cotizan aparte</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 · Cierre -->
+  <section class="diapositiva" id="cierre" data-capitulo="Cómo trabajamos" data-nombre="Siguiente paso" data-degradada>
+    <div class="texto">
+      <div class="rotulo" data-a style="--d:.1">Lo que sigue</div>
+      <h2 class="titulo" style="--ts:76px; --d:.25" data-a>Empecemos con un diagnóstico de dos semanas.</h2>
+      <div class="pasos-cierre">
+        <div data-a style="--d:.45"><span>1</span>Una sesión de 90 minutos contigo y tu equipo directivo para elegir el proceso piloto.</div>
+        <div data-a style="--d:.55"><span>2</span>Acceso a las fuentes de ese proceso, bajo convenio de confidencialidad.</div>
+        <div data-a style="--d:.65"><span>3</span>En 10 días hábiles: mapa priorizado, objetivo firmado y plan del primer módulo.</div>
+      </div>
+      <div class="contacto" data-a style="--d:.85"><b>narrative.studio</b><span>info@narrative.studio</span><span>+52 (81) 2091 1400</span><span style="font-weight:300">Monterrey, N. L.</span></div>
+    </div>
+    <div class="marca-grande" data-a="aparece" style="--d:.5"><div class="marca" style="--t:260px"><div class="iso"><span><b>N</b><i>studio</i></span></div></div></div>
+  </section>
+
+  <!-- Índice -->
+  <div class="indice" id="indice" aria-hidden="true">
+    <button type="button" class="boton cerrar-indice" id="cerrar-indice" aria-label="Cerrar índice (Esc)"><svg class="ico" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  </div>
+
+  <div class="controles">
+    <div class="barra"><i id="progreso"></i></div>
+    <div class="botones">
+      <button type="button" class="boton" id="btn-indice" title="Índice (I)" aria-label="Índice (I)"><svg class="ico" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+      <button type="button" class="boton" id="btn-ant" title="Anterior (←)" aria-label="Anterior (←)"><svg class="ico" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <button type="button" class="boton" id="btn-sig" title="Siguiente (→)" aria-label="Siguiente (→)"><svg class="ico" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+      <button type="button" class="boton" id="btn-pantalla" title="Pantalla completa (F)" aria-label="Pantalla completa (F)"><svg class="ico" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
+    </div>
+  </div>
+</div>
+<p class="girar">Gira tu teléfono para ver la presentación completa.</p>
+
+<script>
+// Nombre del cliente: se cambia aquí y aparece en toda la presentación.
+const CLIENTE = "Grupo Xignux";
+
+const ICONOS = {
+  tablero: '<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>',
+  datos: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+  chat: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/>',
+  enchufe: '<path d="M9 2v6M15 2v6"/><path d="M6 8h12v3a6 6 0 0 1-12 0z"/><path d="M12 17v5"/>',
+  carrito: '<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a1.5 1.5 0 0 0 1.5 1.1h8.6a1.5 1.5 0 0 0 1.5-1.1L21 7H6"/>',
+  video: '<rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 10l6-3v10l-6-3"/>',
+  documento: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>',
+  flujo: '<rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M9 6h4a2 2 0 0 1 2 2v7"/>',
+  buscar: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+  ojo: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  movil: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/>',
+  diana: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+  libro: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5V21h16"/>',
+  persona: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  llave: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  reglas: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/>',
+  check: '<path d="M20 6L9 17l-5-5"/>',
+  flecha: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+};
+const ico = (n, extra = "") => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" ${extra}>${ICONOS[n]}</svg>`;
+
+/* ---------- Datos de cada diapositiva ---------- */
+const DOLORES = [
+  { h: "El conocimiento vive en PDFs y en unas cuantas personas", sintoma: "Fichas técnicas, manuales, normas y criterios que solo dominan algunos expertos.", costo: "Cada consulta espera a que el experto esté libre. Si se va, el conocimiento se va con él.", ia: "Un asistente que responde con tus documentos y cita la fuente de cada dato.", ej: "Viakon: 63 cables y 414 criterios de sus técnicos, consultables en segundos." },
+  { h: "Clientes y distribuidores esperan respuesta", sintoma: "Cotizaciones, existencias y dudas por WhatsApp y correos personales.", costo: "Respuestas en horas o días, conversaciones sin registro y ventas que se enfrían.", ia: "Un canal único 24/7 que resuelve lo frecuente y pasa a una persona con el contexto.", ej: "Zytaia: agente de WhatsApp en producción que responde, califica y agenda." },
+  { h: "Reportes armados a mano", sintoma: "Un Excel que se consolida cada semana copiando de varios sistemas.", costo: "La dirección decide con datos de hace una o dos semanas.", ia: "Tableros que se actualizan solos y un resumen automático para dirección.", ej: "Panel de Viakon: 722 conversaciones medidas por tema, horario y resultado." },
+  { h: "Sistemas que no se hablan", sintoma: "ERP, CRM, portales y hojas de cálculo con datos duplicados.", costo: "Recaptura, errores y nadie sabe cuál es el dato correcto.", ia: "Conexiones y flujos que mueven la información sola entre sistemas.", ej: "Integraciones por API, base de datos o archivos, sin cambiar tu ERP." },
+  { h: "Cumplimiento y auditorías en papel", sintoma: "NOM, auditorías de clientes y evidencias repartidas en carpetas.", costo: "Semanas de preparación por auditoría y riesgo de multas.", ia: "Documentos generados con el requisito citado y alertas cuando cambia la norma.", ej: "CERTIA: 21 normas y 232 requisitos tomados textualmente del DOF." },
+  { h: "Marketing y ventas sin capacidad", sintoma: "El equipo no alcanza a producir contenido ni a prospectar.", costo: "Oportunidades que nadie trabaja y una marca que se ve igual que hace años.", ia: "Contenido y video producidos en serie, prospección calificada y seguimiento.", ej: "Producción de video con IA y agente de prospección con CRM." },
+];
+
+const PUNTOS = [
+  { n: "Respuesta técnica a clientes", x: 82, y: 14, alto: true, area: "Comercial", horas: "180 h/mes", por: "Mucho volumen, conocimiento documentado y un resultado fácil de medir." },
+  { n: "Cotizaciones a distribuidores", x: 68, y: 26, alto: true, area: "Ventas", horas: "120 h/mes", por: "Reglas de precio claras y datos en el ERP. Impacto directo en ventas." },
+  { n: "Documentación de auditorías", x: 56, y: 38, alto: true, area: "Calidad", horas: "90 h/mes", por: "Alto impacto en riesgo. Requiere validar con el área de seguridad." },
+  { n: "Pronóstico de demanda", x: 22, y: 20, area: "Planeación", horas: "60 h/mes", por: "Gran impacto, pero necesita datos históricos limpios. Se prepara primero." },
+  { n: "Inspección visual en línea", x: 30, y: 36, area: "Producción", horas: "—", por: "Requiere cámaras y pruebas en piso. Conviene después del primer éxito." },
+  { n: "Reporte semanal a dirección", x: 84, y: 60, area: "Dirección", horas: "48 h/mes", por: "Rápido de construir. Libera horas y mejora la calidad de las decisiones." },
+  { n: "Conciliación con proveedores", x: 70, y: 74, area: "Finanzas", horas: "40 h/mes", por: "Datos estructurados en CFDI. Ahorro claro, impacto moderado." },
+  { n: "Directorio interno de políticas", x: 28, y: 78, area: "Recursos humanos", horas: "15 h/mes", por: "Poco volumen hoy. No justifica ser prioridad." },
+];
+
+const OBJETIVOS = [
+  { tab: "Respuesta técnica", frase: "Que un cliente obtenga una respuesta técnica correcta sin esperar al área de ingeniería.", ind: "Tiempo de primera respuesta", hoy: "1 a 2 días", meta: "Menos de 1 minuto", mide: "Bitácora de cada conversación, con hora de entrada y de respuesta.", extra: "Secundario: 60% de consultas resueltas sin intervención humana." },
+  { tab: "Cotizaciones", frase: "Que cada distribuidor reciba su cotización el mismo día que la pide.", ind: "Tiempo de cotización", hoy: "6 horas", meta: "15 minutos", mide: "Hora de solicitud contra hora de envío, registradas en el CRM.", extra: "Secundario: cotizaciones por vendedor al día." },
+  { tab: "Reporte de dirección", frase: "Que veas cada mañana cómo cerró tu operación el día anterior.", ind: "Antigüedad del dato", hoy: "7 a 15 días", meta: "Diario y automático", mide: "Fecha del último dato visible en el tablero.", extra: "Secundario: horas de consolidación manual, de 12 a 0 por semana." },
+];
+
+const CAPAS = [
+  { capa: "Canales", piezas: [
+    { n: "WhatsApp", d: "Una línea institucional, no personal, que atiende a clientes y distribuidores.", ej: "Zytaia opera con tráfico real de WhatsApp.", s: "Semana 3" },
+    { n: "Sitio web", d: "Asistente y herramientas dentro de tu sitio, con tu marca.", ej: "Asistente flotante de ai.viakon.com.", s: "Semana 3" },
+    { n: "Correo", d: "Lectura y respuesta de correos entrantes con las reglas de tu negocio.", ej: "Clasificación y borrador de respuesta para aprobación.", s: "Semana 5" },
+    { n: "Teams o app interna", d: "El mismo sistema disponible para tu personal, donde ya trabaja.", ej: "Consultor interno de políticas y procedimientos.", s: "Semana 6" },
+  ]},
+  { capa: "Inteligencia", piezas: [
+    { n: "Asistente conversacional", d: "Entiende la pregunta en lenguaje normal y conduce la conversación.", ej: "Asistente de Viakon: dudas rápidas y orientación.", s: "Semana 3" },
+    { n: "Consultor con citas", d: "Responde solo con tus documentos y muestra la página de donde sale el dato.", ej: "Consultor de información técnica de Viakon.", s: "Semana 4" },
+    { n: "Clasificador", d: "Detecta intención, urgencia y tema para enrutar cada caso.", ej: "Prefiltro de intención y frustración de Zytaia.", s: "Semana 4" },
+    { n: "Generador de documentos", d: "Produce cotizaciones, reportes y expedientes en Word, Excel o PDF.", ej: "CERTIA genera 216 entregables normativos.", s: "Semana 5" },
+  ]},
+  { capa: "Reglas y flujos", piezas: [
+    { n: "Reglas de negocio", d: "Lo que el sistema puede y no puede hacer, escrito con tu equipo.", ej: "Respuestas compuestas en código para los casos críticos de Viakon.", s: "Semana 3" },
+    { n: "Aprobaciones", d: "Una persona aprueba lo importante antes de que salga.", ej: "Matriz de validación firmada por los técnicos de Viakon.", s: "Semana 4" },
+    { n: "Escalamiento", d: "Si nadie responde o el caso excede al sistema, sube solo al responsable.", ej: "Incidencias que escalan en Clean Manager.", s: "Semana 4" },
+  ]},
+  { capa: "Conexiones", piezas: [
+    { n: "ERP", d: "Lectura de existencias, precios, pedidos y clientes. Escritura solo donde se autorice.", ej: "SAP, Oracle, Microsoft Dynamics, Odoo, CONTPAQi.", s: "Semana 6" },
+    { n: "CRM", d: "Cada conversación crea o actualiza la oportunidad comercial.", ej: "Salesforce, HubSpot o el CRM que ya uses.", s: "Semana 7" },
+    { n: "Bases de datos", d: "Consultas seguras a tus bases, con permisos de solo lectura.", ej: "PostgreSQL, SQL Server, MySQL.", s: "Semana 6" },
+    { n: "Portales", d: "Conexión con portales de clientes, proveedores o gobierno.", ej: "Descarga y carga de archivos programada.", s: "Semana 8" },
+  ]},
+  { capa: "Fuentes", piezas: [
+    { n: "Documentos técnicos", d: "Fichas, manuales y especificaciones, indexados con su página.", ej: "Fichas y manual eléctrico de Viakon.", s: "Semana 2" },
+    { n: "Catálogos", d: "Productos, precios y equivalencias como fuente única de verdad.", ej: "Catálogo oficial de 63 cables.", s: "Semana 2" },
+    { n: "Normas y políticas", d: "Normas oficiales, contratos y políticas internas, con su texto exacto.", ej: "NOM-001-SEDE, NOM-STPS.", s: "Semana 2" },
+    { n: "Históricos", d: "Conversaciones, tickets y pedidos pasados para entrenar las reglas y medir.", ej: "Preguntas frecuentes reales de tus clientes.", s: "Semana 2" },
+  ]},
+];
+const CONTROL = [
+  { n: "Tablero de dirección", d: "Indicadores en vivo: volumen, tiempos, resolución automática y temas.", ej: "Panel de consultas y reporte semanal de Viakon.", s: "Semana 8" },
+  { n: "Bitácora y auditoría", d: "Registro de cada respuesta, fuente consultada y acción tomada.", ej: "Cada consulta de Viakon queda en base de datos.", s: "Semana 3" },
+  { n: "Seguridad y roles", d: "Acceso por perfil, límites de uso, filtros de salida y revisión de seguridad.", ej: "Límites por IP y auditoría previa al lanzamiento.", s: "Desde la semana 1" },
+];
+
+const FUENTES = [
+  { cab: "Documentos", icono: "libro", items: ["Manuales y fichas técnicas", "Políticas y procedimientos", "Normas y contratos que aplican", "Preguntas frecuentes reales"] },
+  { cab: "Datos", icono: "datos", items: ["Exportación del ERP o CRM de 3 a 12 meses", "Catálogo de productos y precios", "Históricos de conversaciones o tickets", "Reportes que hoy se arman a mano"] },
+  { cab: "Accesos", icono: "llave", items: ["Usuario de prueba o API del ERP", "Número de WhatsApp Business", "Ambiente de pruebas", "Lineamientos de TI y seguridad"] },
+  { cab: "Personas", icono: "persona", items: ["Responsable del objetivo en dirección", "Experto que valida las respuestas", "Enlace de TI", "Grupo de usuarios piloto"] },
+  { cab: "Reglas", icono: "reglas", items: ["Criterios de decisión del área", "Excepciones y casos especiales", "Quién aprueba qué", "Lo que el sistema nunca debe decir"] },
+];
+
+const FASES = [
+  { n: "Diagnóstico y objetivo", ini: 1, fin: 2, act: ["Entrevistas con dirección y dueños de proceso", "Observación en sitio y revisión de datos", "Matriz de impacto y factibilidad"], ent: "Mapa priorizado y objetivo firmado", cli: "6 a 8 horas de tu equipo" },
+  { n: "Construcción del módulo 1", ini: 3, fin: 4, act: ["Carga de fuentes y reglas de negocio", "Asistente y flujos en ambiente de prueba", "Demo quincenal con el dueño del proceso"], ent: "Primer módulo funcionando en pruebas", cli: "2 horas por semana del experto" },
+  { n: "Validación con tus expertos", ini: 4, fin: 5, act: ["Batería de preguntas reales", "Corrección de cada respuesta observada", "Firma de aprobación del área"], ent: "Respuestas aprobadas por tu equipo", cli: "4 horas del experto validador" },
+  { n: "Lanzamiento controlado", ini: 6, fin: 6, hito: true, act: ["Usuarios piloto en producción", "Monitoreo diario de la bitácora", "Ajustes en 24 horas"], ent: "Primer sistema operando con usuarios reales", cli: "Grupo piloto activo" },
+  { n: "Módulo 2 y conexiones", ini: 7, fin: 10, act: ["Conexión con ERP y CRM", "Segundo canal o segundo proceso", "Pruebas de carga y seguridad"], ent: "Sistema conectado a tus datos en vivo", cli: "Enlace de TI disponible" },
+  { n: "Tablero de dirección", ini: 9, fin: 11, act: ["Indicadores contra la meta", "Reporte semanal automático", "Capacitación a los responsables"], ent: "Indicadores en vivo para dirección", cli: "1 sesión con dirección" },
+  { n: "Revisión trimestral", ini: 12, fin: 12, hito: true, act: ["Resultados contra la meta", "Lecciones y ajustes", "Plan del siguiente trimestre"], ent: "Resultados y roadmap aprobado", cli: "1 sesión de 90 minutos" },
+];
+
+const CAPACIDADES = [
+  { n: "Tableros de control", i: "tablero", d: "Indicadores en tiempo real para dirección y operación, conectados a tus sistemas.", inc: ["Indicadores contra meta", "Alertas cuando algo se sale de rango", "Reporte automático semanal"], hecho: ["Panel de Viakon", "Tablero de planta de Clean Manager", "Centro de mando en vivo"] },
+  { n: "Sistemas de gestión de información", i: "datos", d: "Plataformas internas para expedientes, inventarios, proveedores y procesos.", inc: ["Captura guiada y sin duplicados", "Flujos de aprobación", "Historial y evidencias"], hecho: ["CERTIA: expedientes de cumplimiento", "Clean Manager: control de contratistas", "Matriz de validación de Viakon"] },
+  { n: "Chatbots y agentes inteligentes", i: "chat", d: "Asistentes que conversan, consultan tus datos y ejecutan acciones.", inc: ["WhatsApp, web, correo y Teams", "Agendan, cotizan y levantan folios", "Pasan a una persona con contexto"], hecho: ["Zytaia en WhatsApp", "Asistentes de Viakon", "Canal de atención REPSE"] },
+  { n: "Conexiones con tus sistemas", i: "enchufe", d: "Integración con lo que ya tienes, sin cambiar de ERP ni de CRM.", inc: ["ERP, CRM y bases de datos", "APIs y archivos programados", "Permisos de solo lectura por defecto"], hecho: ["SAP, Dynamics, Odoo, CONTPAQi", "Salesforce y HubSpot", "Portales de clientes y proveedores"] },
+  { n: "Plataformas y tiendas en línea", i: "carrito", d: "Sitios, portales B2B y comercio electrónico con pagos y facturación.", inc: ["Catálogos y pedidos en línea", "Pagos con tarjeta y transferencia", "Portales para distribuidores"], hecho: ["Marketplace con checkout de APEX Carbon", "Venta de cursos con Stripe", "Sitios corporativos bilingües"] },
+  { n: "Material visual y audiovisual", i: "video", d: "Video con IA, voz, 3D, fotografía de producto y animación para tu marca.", inc: ["Videos de producto y capacitación", "Voces y avatares con IA", "Modelos 3D y configuradores"], hecho: ["Videos de CERTIA y Clean Manager", "Configurador 3D de ARKE 360", "Anuncios con avatares"] },
+  { n: "Documentos automáticos", i: "documento", d: "Reportes, cotizaciones, contratos y expedientes en Word, Excel y PDF.", inc: ["Plantillas con tu formato", "Datos tomados de tus sistemas", "Cada requisito citado"], hecho: ["CERTIA: 216 entregables", "Estudios de 40+ páginas de Satellitall", "Propuestas comerciales"] },
+  { n: "Automatización de procesos", i: "flujo", d: "Flujos que capturan, validan, enrutan y avisan sin intervención.", inc: ["Captura desde correo, WhatsApp o archivos", "Validaciones y excepciones", "Escalamiento automático"], hecho: ["Escalamiento de incidencias en planta", "Seguimiento automático a prospectos", "Conciliaciones"] },
+  { n: "Búsqueda inteligente en documentos", i: "buscar", d: "Respuestas exactas sobre manuales, normas y contratos, con la cita.", inc: ["Miles de páginas consultables", "Respuesta con página de origen", "Admite cuando no sabe"], hecho: ["Consultor técnico de Viakon", "Consultor normativo de CERTIA", "Manuales internos"] },
+  { n: "Análisis de datos y visión", i: "ojo", d: "Datos satelitales, imágenes, lectura de documentos y pronósticos.", inc: ["Lectura de facturas y formatos", "Análisis de imágenes", "Modelos de pronóstico"], hecho: ["Satellitall: datos de NASA y Sentinel", "Análisis de cobertura vegetal", "Lectura de CFDI"] },
+  { n: "Apps móviles y de campo", i: "movil", d: "Apps para tablet y teléfono que funcionan aun sin internet.", inc: ["iOS, Android y tablets de pared", "Modo sin conexión", "Fotos y evidencias en campo"], hecho: ["Tablet de planta de Clean Manager", "App Amanecí para iOS y Android", "Demo en iPad para piso"] },
+  { n: "Prospección y CRM inteligente", i: "diana", d: "Encontrar, calificar y dar seguimiento a clientes potenciales.", inc: ["Listas desde datos públicos", "Calificación contra tu cliente ideal", "Mensajes listos para aprobar"], hecho: ["Agente de prospección en LinkedIn", "4,814 empresas de N. L. filtradas a 30", "Kits de venta"] },
+];
+
+const PLANES = [
+  { n: "Esencial", p: "$20,000", filas: [["Horas al mes", "20"], ["Módulos activos", "1"], ["Soporte", "1 día hábil"], ["Sesión estratégica", "Trimestral"]],
+    meses: ["Diagnóstico y módulo 1", "Lanzamiento controlado", "Ajustes con datos de uso", "Segundo canal", "Mejoras del módulo", "Revisión y plan"] },
+  { n: "Ampliado", p: "$30,000", filas: [["Horas al mes", "35"], ["Módulos activos", "Hasta 3"], ["Soporte", "4 h hábiles"], ["Sesión estratégica", "Mensual"]],
+    meses: ["Diagnóstico y módulo 1", "Lanzamiento y conexión al ERP", "Módulo 2", "Tablero de dirección", "Módulo 3", "Revisión y plan anual"] },
+  { n: "Corporativo", p: "$40,000", filas: [["Horas al mes", "50"], ["Módulos activos", "+1 cada mes"], ["Soporte", "Mismo día"], ["Sesión estratégica", "Quincenal"]],
+    meses: ["Diagnóstico y módulo 1", "Módulo 2 y ERP", "Módulo 3 y tablero", "Módulo 4 en otra empresa del grupo", "Módulo 5 y capacitación", "Revisión y plan anual"] },
+];
+
+/* ---------- Renderizado de las piezas interactivas ---------- */
+function sel(grupo, el) { grupo.forEach((x) => x.classList.toggle("sel", x === el)); }
+function animarCambio(el) { el.classList.remove("cambia"); void el.offsetWidth; el.classList.add("cambia"); }
+
+function initDolores() {
+  const cont = document.getElementById("dolores");
+  const det = document.getElementById("detalle-dolor");
+  cont.innerHTML = DOLORES.map((d, i) => `<button type="button" class="dolor opcion" data-a style="--d:${0.3 + i * 0.08}"><span class="n">${String(i + 1).padStart(2, "0")}</span><span class="h">${d.h}</span></button>`).join("");
+  const botones = [...cont.children];
+  const mostrar = (i) => {
+    const d = DOLORES[i];
+    sel(botones, botones[i]);
+    det.innerHTML = `<div class="etiqueta" style="color:var(--magenta)">Tema ${i + 1} de ${DOLORES.length}</div><div class="h">${d.h}</div>
+      <div class="fila-detalle"><span class="etiqueta">Síntoma</span><span>${d.sintoma}</span></div>
+      <div class="fila-detalle"><span class="etiqueta">Lo que cuesta</span><span>${d.costo}</span></div>
+      <div class="fila-detalle ia"><span class="etiqueta">Con un sistema de IA</span><span><b>${d.ia}</b></span></div>
+      <div class="fila-detalle"><span class="etiqueta">Ya lo hicimos</span><span>${d.ej}</span></div>`;
+    animarCambio(det);
+  };
+  botones.forEach((b, i) => b.addEventListener("click", () => mostrar(i)));
+  mostrar(0);
+}
+
+function initMatriz() {
+  const plano = document.getElementById("plano");
+  const ficha = document.getElementById("ficha-matriz");
+  plano.insertAdjacentHTML("beforeend", PUNTOS.map((p, i) => `<button type="button" class="punto${p.alto ? " alto" : ""}${p.x > 72 ? " izq" : ""}" style="left:${p.x}%; top:${p.y}%; --d:${0.5 + i * 0.07}" data-a="aparece"><i></i><span>${p.n}</span></button>`).join(""));
+  const puntos = [...plano.querySelectorAll(".punto")];
+  puntos.forEach((el, i) => el.style.setProperty("--d", 0.5 + i * 0.07));
+  const mostrar = (i) => {
+    const p = PUNTOS[i];
+    sel(puntos, puntos[i]);
+    const cuadrante = p.y < 50 ? (p.x >= 50 ? "Empezar aquí" : "Planear") : (p.x >= 50 ? "Ganancias rápidas" : "No por ahora");
+    ficha.innerHTML = `<div class="etiqueta" style="color:var(--magenta)">${cuadrante}</div><div class="h">${p.n}</div><div class="datos"><span class="chip">${p.area}</span><span class="chip">Tiempo invertido hoy: ${p.horas}</span></div><div class="parrafo" style="--ps:17px; margin:0">${p.por}</div><div class="pie">Ejemplo ilustrativo para un grupo industrial.</div>`;
+    animarCambio(ficha);
+  };
+  puntos.forEach((b, i) => b.addEventListener("click", () => mostrar(i)));
+  mostrar(0);
+}
+
+function initObjetivos() {
+  const tabs = document.getElementById("pestanas-obj");
+  const card = document.getElementById("tarjeta-obj");
+  tabs.innerHTML = OBJETIVOS.map((o, i) => `<button type="button" role="tab" class="pestana">${o.tab}</button>`).join("");
+  const botones = [...tabs.children];
+  const mostrar = (i) => {
+    const o = OBJETIVOS[i];
+    botones.forEach((b, n) => { b.classList.toggle("sel", n === i); b.setAttribute("aria-selected", String(n === i)); });
+    card.innerHTML = `<div class="etiqueta" style="color:var(--magenta)">Objetivo</div><div class="meta-frase">${o.frase}</div>
+      <div class="hoy-meta"><div class="lado hoy"><div class="etiqueta">Hoy</div><div class="v">${o.hoy}</div></div><div class="flecha">${ico("flecha")}</div><div class="lado"><div class="etiqueta">Meta a 90 días</div><div class="v grad-texto">${o.meta}</div></div></div>
+      <div class="regla"><div class="dato-obj"><span class="etiqueta">Indicador</span><span>${o.ind}</span></div><div class="dato-obj"><span class="etiqueta">Cómo se mide</span><span>${o.mide}</span></div></div>
+      <div class="pie" style="font-size:15px">${o.extra}</div>`;
+    animarCambio(card);
+  };
+  botones.forEach((b, i) => b.addEventListener("click", () => mostrar(i)));
+  mostrar(0);
+}
+
+function initModulos() {
+  const capas = document.getElementById("capas");
+  const control = document.getElementById("control");
+  const ficha = document.getElementById("ficha-modulo");
+  const todas = [];
+  capas.innerHTML = CAPAS.map((c, ci) => `<div class="capa"><div class="nombre-capa">${c.capa}</div><div class="piezas">${c.piezas.map((p, pi) => { todas.push({ ...p, capa: c.capa }); return `<button type="button" class="pieza opcion" data-k="${todas.length - 1}">${p.n}</button>`; }).join("")}</div></div>`).join("");
+  control.innerHTML = `<div class="nombre-capa">Control</div>` + CONTROL.map((p) => { todas.push({ ...p, capa: "Control" }); return `<button type="button" class="pieza opcion" data-k="${todas.length - 1}">${p.n}</button>`; }).join("");
+  const botones = [...document.querySelectorAll("#modulos .pieza")];
+  const mostrar = (k) => {
+    const p = todas[k];
+    sel(botones, botones.find((b) => +b.dataset.k === k));
+    ficha.innerHTML = `<div class="capa-de">Capa · ${p.capa}</div><div class="h">${p.n}</div><div class="parrafo" style="--ps:18px; margin:0">${p.d}</div>
+      <div class="fila-detalle ia"><span class="etiqueta">Ejemplo real</span><span>${p.ej}</span></div>
+      <div class="fila-detalle"><span class="etiqueta">Se entrega</span><span><b>${p.s}</b></span></div>
+      <div class="pie">Cada módulo se prueba por separado antes de conectarse con los demás.</div>`;
+    animarCambio(ficha);
+  };
+  botones.forEach((b) => b.addEventListener("click", () => mostrar(+b.dataset.k)));
+  mostrar(5);
+}
+
+function initFuentes() {
+  const cont = document.getElementById("fuentes-lista");
+  cont.innerHTML = FUENTES.map((c, ci) => `<div class="columna-fuente" data-a style="--d:${0.35 + ci * 0.1}"><div class="cab">${ico(c.icono)}${c.cab}</div>${c.items.map((it) => `<button type="button" class="item-fuente" aria-pressed="false"><span class="caja"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span><span>${it}</span></button>`).join("")}</div>`).join("");
+  const items = [...cont.querySelectorAll(".item-fuente")];
+  const barra = document.getElementById("avance-barra");
+  const cuenta = document.getElementById("avance-cuenta");
+  const actualizar = () => {
+    const n = items.filter((i) => i.classList.contains("listo")).length;
+    barra.style.width = (n / items.length) * 100 + "%";
+    cuenta.textContent = `${n} / ${items.length}`;
+  };
+  items.forEach((it) => it.addEventListener("click", () => { const on = it.classList.toggle("listo"); it.setAttribute("aria-pressed", String(on)); actualizar(); }));
+  actualizar();
+}
+
+function initPlan() {
+  const filas = document.getElementById("gantt-filas");
+  const ficha = document.getElementById("ficha-fase");
+  filas.innerHTML = FASES.map((f, i) => `<button type="button" class="gantt-fila${f.hito ? " hito" : ""}" style="--i:${i}"><span class="nombre">${f.n}</span><span class="tramo" style="grid-column:${f.ini + 1} / ${f.fin + 2}"></span></button>`).join("");
+  const botones = [...filas.children];
+  const mostrar = (i) => {
+    const f = FASES[i];
+    sel(botones, botones[i]);
+    const semanas = f.ini === f.fin ? `Semana ${f.ini}` : `Semanas ${f.ini} a ${f.fin}`;
+    ficha.innerHTML = `<div class="etiqueta" style="color:var(--magenta)">${semanas}${f.hito ? " · hito" : ""}</div><div class="h">${f.n}</div>
+      <ul>${f.act.map((a) => `<li>${a}</li>`).join("")}</ul>
+      <div class="fila-detalle ia"><span class="etiqueta">Entregable</span><span><b>${f.ent}</b></span></div>
+      <div class="fila-detalle"><span class="etiqueta">De tu lado</span><span>${f.cli}</span></div>`;
+    animarCambio(ficha);
+  };
+  botones.forEach((b, i) => b.addEventListener("click", () => mostrar(i)));
+  mostrar(3);
+}
+
+function initCapacidades() {
+  const rejilla = document.getElementById("rejilla");
+  const ficha = document.getElementById("ficha-cap");
+  rejilla.innerHTML = CAPACIDADES.map((c, i) => `<button type="button" class="capacidad opcion" data-a style="--d:${0.3 + i * 0.05}"><span class="icono">${ico(c.i)}</span><span class="h">${c.n}</span></button>`).join("");
+  const botones = [...rejilla.children];
+  const mostrar = (i) => {
+    const c = CAPACIDADES[i];
+    sel(botones, botones[i]);
+    ficha.innerHTML = `<div class="icono-grande">${ico(c.i)}</div><div class="h">${c.n}</div><div class="parrafo" style="--ps:18px; margin:0">${c.d}</div>
+      <ul>${c.inc.map((x) => `<li>${x}</li>`).join("")}</ul>
+      <div class="etiqueta" style="color:var(--magenta)">Lo hemos hecho en</div><div class="hecho">${c.hecho.map((x) => `<span class="chip">${x}</span>`).join("")}</div>`;
+    animarCambio(ficha);
+  };
+  botones.forEach((b, i) => b.addEventListener("click", () => mostrar(i)));
+  mostrar(0);
+}
+
+function initPlanes() {
+  const cont = document.getElementById("planes");
+  const meses = document.getElementById("meses");
+  const titulo = document.getElementById("semestre-titulo");
+  cont.innerHTML = PLANES.map((p) => `<button type="button" class="plan opcion"><span class="nombre-plan">${p.n}</span><span class="precio">${p.p}<small>MXN al mes + IVA</small></span><dl>${p.filas.map(([a, b]) => `<div><dt>${a}</dt><dd>${b}</dd></div>`).join("")}</dl></button>`).join("");
+  const botones = [...cont.children];
+  const mostrar = (i) => {
+    const p = PLANES[i];
+    sel(botones, botones[i]);
+    titulo.textContent = `Así se vería tu primer semestre · plan ${p.n}`;
+    meses.innerHTML = p.meses.map((m, n) => `<div class="mes"><span class="etiqueta">Mes ${n + 1}</span><p>${m}</p></div>`).join("");
+    animarCambio(meses);
+  };
+  botones.forEach((b, i) => b.addEventListener("click", () => mostrar(i)));
+  mostrar(1);
+}
+
+function contar(diapo) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  diapo.querySelectorAll("[data-cuenta]").forEach((el) => {
+    const fin = +el.dataset.cuenta;
+    const inicio = performance.now() + 500;
+    const paso = (t) => {
+      const p = Math.min(1, Math.max(0, (t - inicio) / 1200));
+      el.textContent = Math.round(fin * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(paso);
+    };
+    el.textContent = "0";
+    requestAnimationFrame(paso);
+  });
+}
+
+/* ---------- Navegación ---------- */
+const escenario = document.getElementById("escenario");
+const diapos = [...document.querySelectorAll(".diapositiva")];
+const total = diapos.length;
+let actual = 0;
+
+function escalar() {
+  const s = Math.min(innerWidth / 1600, innerHeight / 900);
+  escenario.style.setProperty("--escala", s);
+}
+
+function ir(n, desdeHash) {
+  const destino = Math.max(0, Math.min(total - 1, n));
+  diapos.forEach((d, i) => { d.classList.toggle("on", i === destino); d.setAttribute("aria-hidden", String(i !== destino)); d.inert = i !== destino; });
+  actual = destino;
+  const d = diapos[destino];
+  escenario.classList.toggle("degradada", d.hasAttribute("data-degradada"));
+  document.body.classList.toggle("degradada", d.hasAttribute("data-degradada"));
+  document.getElementById("numero").textContent = `${String(destino + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
+  document.getElementById("capitulo").textContent = d.dataset.capitulo;
+  document.getElementById("progreso").style.width = ((destino + 1) / total) * 100 + "%";
+  document.getElementById("btn-ant").disabled = destino === 0;
+  document.getElementById("btn-sig").disabled = destino === total - 1;
+  if (!desdeHash) { try { history.replaceState(null, "", "#" + (destino + 1)); } catch (e) {} }
+  contar(d);
+}
+
+function repetir() {
+  const d = diapos[actual];
+  d.classList.remove("on"); void d.offsetWidth; d.classList.add("on");
+  contar(d);
+}
+
+const indice = document.getElementById("indice");
+function construirIndice() {
+  const grupos = {};
+  diapos.forEach((d, i) => { (grupos[d.dataset.capitulo] ||= []).push([i, d.dataset.nombre]); });
+  indice.insertAdjacentHTML("beforeend", Object.entries(grupos).map(([cap, lista]) => `<div><h3>${cap}</h3><ol>${lista.map(([i, n]) => `<li><button type="button" data-i="${i}"><span>${String(i + 1).padStart(2, "0")}</span>${n}</button></li>`).join("")}</ol></div>`).join(""));
+  indice.querySelectorAll("[data-i]").forEach((b) => b.addEventListener("click", () => { ir(+b.dataset.i); alternarIndice(false); }));
+}
+function alternarIndice(abrir) {
+  const abierto = abrir ?? !indice.classList.contains("abierto");
+  indice.classList.toggle("abierto", abierto);
+  indice.setAttribute("aria-hidden", String(!abierto));
+  indice.querySelectorAll("[data-i]").forEach((b) => b.classList.toggle("actual", +b.dataset.i === actual));
+}
+
+function pantallaCompleta() {
+  const el = document.documentElement;
+  try { (document.fullscreenElement ? document.exitFullscreen() : el.requestFullscreen?.())?.catch?.(() => {}); } catch (e) {}
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const enBoton = e.target.closest && e.target.closest("button");
+  switch (e.key) {
+    case "ArrowRight": case "PageDown": e.preventDefault(); ir(actual + 1); break;
+    case " ": case "Enter": if (enBoton) return; e.preventDefault(); ir(actual + 1); break;
+    case "ArrowLeft": case "PageUp": e.preventDefault(); ir(actual - 1); break;
+    case "Home": ir(0); break;
+    case "End": ir(total - 1); break;
+    case "r": case "R": repetir(); break;
+    case "f": case "F": pantallaCompleta(); break;
+    case "i": case "I": alternarIndice(); break;
+    case "Escape": alternarIndice(false); break;
+  }
+});
+
+let toque = null;
+escenario.addEventListener("touchstart", (e) => { toque = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }, { passive: true });
+escenario.addEventListener("touchend", (e) => {
+  if (!toque) return;
+  const dx = e.changedTouches[0].clientX - toque.x, dy = e.changedTouches[0].clientY - toque.y;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) ir(actual + (dx < 0 ? 1 : -1));
+  toque = null;
+});
+
+document.getElementById("btn-ant").addEventListener("click", () => ir(actual - 1));
+document.getElementById("btn-sig").addEventListener("click", () => ir(actual + 1));
+document.getElementById("btn-pantalla").addEventListener("click", pantallaCompleta);
+document.getElementById("btn-indice").addEventListener("click", () => alternarIndice());
+document.getElementById("cerrar-indice").addEventListener("click", () => alternarIndice(false));
+document.querySelectorAll("[data-ir]").forEach((b) => b.addEventListener("click", () => ir(diapos.findIndex((d) => d.id === b.dataset.ir))));
+addEventListener("resize", escalar);
+addEventListener("hashchange", () => { const n = parseInt(location.hash.slice(1), 10); if (n >= 1 && n <= total) ir(n - 1, true); });
+
+document.querySelectorAll("[data-cliente]").forEach((el) => (el.textContent = CLIENTE));
+initDolores(); initMatriz(); initObjetivos(); initModulos(); initFuentes(); initPlan(); initCapacidades(); initPlanes();
+construirIndice();
+escalar();
+const inicial = parseInt(location.hash.slice(1), 10);
+ir(inicial >= 1 && inicial <= total ? inicial - 1 : 0, true);
+</script>
+</body>
+</html>
